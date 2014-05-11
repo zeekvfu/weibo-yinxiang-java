@@ -15,7 +15,7 @@ class yinxiang_failed_clip {
 	private String access_token;
 	private Timestamp start_timestamp;
 	private String[] failed_clip_array;
-	
+
 	// constructor 需要 access_token 和微博 id 作为参数
 	public yinxiang_failed_clip(String access_token,
 			Timestamp start_timestamp) {
@@ -25,7 +25,7 @@ class yinxiang_failed_clip {
 	}
 
 	public void handleFailedClip() {
-		
+
 	}
 }
 

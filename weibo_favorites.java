@@ -86,7 +86,8 @@ class weibo_favorites {
 				debugInfo(weibo_favorite_json);
 				weibo_favorite_to_yinxiang.handleWeiboFavoriteArray(access_token,
 						weibo_favorite_json.favorite_weibo_array,
-						weibo_favorite_json.current_page_count);
+						weibo_favorite_json.current_page_count,
+						true);
 			} catch (WeiboException e) {
 				e.printStackTrace();
 			}

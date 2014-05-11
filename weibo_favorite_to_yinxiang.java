@@ -84,8 +84,9 @@ class weibo_favorite_to_yinxiang {
 		return;
 	}
 
-	// 处理收藏
-	public void handleFavorite() {
+	// 处理收藏。delete_favorite 表示是否需要移除收藏
+	// 因为如果上次 @我的印象笔记 后，保存微博失败，该微博其实已经被移除收藏了。
+	public void handleFavorite(boolean delete_favorite) {
 		if (true == commentFavorite()) {
 			// 评论之后，不要立即删除微博，等印象笔记处理完，再删除
 			try {
@@ -94,7 +95,9 @@ class weibo_favorite_to_yinxiang {
 				Thread.currentThread().interrupt();
 			}
 			deleteComment();
-			deleteFavorite();
+			if (true == delete_favorite) {
+				deleteFavorite();
+			}
 			try {
 				Thread.sleep(3000);
 			} catch (InterruptedException ex) {
@@ -108,11 +111,11 @@ class weibo_favorite_to_yinxiang {
 	// 注意事项：数组 favorite_weibo_array[] 中并不一定所有的元素都用上了，
 	// 即 array_length <= favorite_weibo_array.length
 	public static void handleWeiboFavoriteArray(String access_token,
-			String[] favorite_weibo_array, int array_length) {
+			String[] favorite_weibo_array, int array_length, boolean delete_favorite) {
 		for (int index = 0; index < array_length; ++index) {
 			weibo_favorite_to_yinxiang object = new weibo_favorite_to_yinxiang(
 					access_token, favorite_weibo_array[index]);
-			object.handleFavorite();
+			object.handleFavorite(delete_favorite);
 			if (true == object.getExitFlag()) {
 				break;
 			}
