@@ -15,7 +15,7 @@ class weibo_favorite_to_yinxiang {
 	private String favorite_weibo_id;
 	private static final String comment_content = "@我的印象笔记";
 	private String comment_id;
-	private boolean exit_flag;			// 是否出现了严重的错误，以致于该退出当前逻辑
+	private boolean exit_flag = false;			// 是否出现了严重的错误，以致于应该退出当前逻辑
 
 	// constructor 需要 access_token 和微博 id 作为参数
 	public weibo_favorite_to_yinxiang(String access_token,
@@ -51,7 +51,7 @@ class weibo_favorite_to_yinxiang {
 			if (20101 == error_code) {
 				Log.logInfo(favorite_weibo_id
 						+ "\tTarget weibo does not exist, now will delete it ...");
-				deleteFavorite();
+//				deleteFavorite();
 			}
 			return false;
 		}
