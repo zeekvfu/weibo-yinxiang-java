@@ -51,7 +51,7 @@ class weibo_favorite_to_yinxiang {
 			if (20101 == error_code) {
 				Log.logInfo(favorite_weibo_id
 						+ "\tTarget weibo does not exist, now will delete it ...");
-//				deleteFavorite();
+				deleteFavorite();
 			}
 			return false;
 		}
