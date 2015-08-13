@@ -12,7 +12,7 @@ import weibo4j.org.json.JSONException;
 import weibo4j.org.json.JSONObject;
 
 
-class weibo_favorites {
+class WeiboFavorites {
 	private String access_token;
 	private Timestamp start_timestamp;
 
@@ -21,9 +21,9 @@ class weibo_favorites {
 
 	// 存放微博收藏对象 JSONObject 的解析结果
 	private class WeiboFavoriteJSON {
-		public int total_number;				// 暂时不用
-		public int current_page_count;		
-		public String[] favorite_weibo_array = null;
+		public int total_number;						// 该用户收藏的微博总量
+		public int current_page_count;					// 每次请求返回的收藏的微博的最大数量（一般为 20）
+		public String[] favorite_weibo_array = null;	// 收藏的微博列表
 
 		// constructor
 		public WeiboFavoriteJSON() {
@@ -33,9 +33,13 @@ class weibo_favorites {
 
 
 	// constructor
-	public weibo_favorites(String access_token) {
+	public WeiboFavorites(String access_token) {
 		this.access_token = access_token;
-	}	
+	}
+
+	public Timestamp getStartTimestamp() {
+		return start_timestamp;
+	}
 
 	// get current timestamp
 	private static Timestamp getCurrentTimestamp() {
@@ -43,17 +47,16 @@ class weibo_favorites {
 		return new Timestamp(date.getTime());
 	}
 
-	// 解析 JSONObject，将结果保存至 WeiboFavoriteJSON 中
-	private boolean parseWeiboFavoriteJSON(JSONObject in,
-			WeiboFavoriteJSON out) {
+	// 解析 JSONObject in，将结果保存至 WeiboFavoriteJSON out 中
+	private boolean parseWeiboFavoriteJSON(JSONObject in, WeiboFavoriteJSON out) {
 		try {
 			out.total_number = in.getInt("total_number");
 			JSONArray json_array = in.getJSONArray("favorites");
 			// 遍历 JSONArray
 			out.current_page_count = json_array.length();
 			for (int index = 0; index < out.current_page_count; ++index)
-				out.favorite_weibo_array[index] = json_array.getJSONObject(
-						index).getString("status");
+				// status 为被收藏的微博 id
+				out.favorite_weibo_array[index] = json_array.getJSONObject(index).getString("status");
 		} catch (JSONException e) {
 			e.printStackTrace();
 			return false;
@@ -71,23 +74,28 @@ class weibo_favorites {
 	}
 
 	// 处理收藏列表
-	public void handleFavorites() {
+	public void handleFavorites(boolean delete_favorite) {
 		start_timestamp = getCurrentTimestamp();
 		Favorite fm = new Favorite();
 		fm.client.setToken(access_token);
 		WeiboFavoriteJSON weibo_favorite_json = new WeiboFavoriteJSON();
 		do {
 			try {
-				JSONObject ids = fm.getFavoritesIds();
-				// Log.logInfo(ids.toString());
+				JSONObject ids = fm.getFavoritesIds();		// 每次请求，返回下一页（一般 20 条）的微博收藏列表
+//				Log.logInfo(ids.toString());				// 不需要，本身就会被 debug 输出
 				if (false == parseWeiboFavoriteJSON(ids, weibo_favorite_json)) {
 					break;
 				}
 				debugInfo(weibo_favorite_json);
-				weibo_favorite_to_yinxiang.handleWeiboFavoriteArray(access_token,
+				try {
+					Thread.sleep(3000);
+				} catch (InterruptedException ex) {
+					Thread.currentThread().interrupt();
+				}
+				WeiboFavoriteToYinxiang.handleWeiboFavoriteArray(delete_favorite,
+						access_token,
 						weibo_favorite_json.favorite_weibo_array,
-						weibo_favorite_json.current_page_count,
-						true);
+						weibo_favorite_json.current_page_count);
 			} catch (WeiboException e) {
 				e.printStackTrace();
 			}
@@ -95,10 +103,6 @@ class weibo_favorites {
 		// while (weibo_favorite_json.current_page_count > 0);
 		return;
 	}
-
-	public Timestamp getStartTimestamp() {
-		return start_timestamp;
-	} 
 }
 
 
