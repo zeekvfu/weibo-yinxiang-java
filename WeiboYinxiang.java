@@ -10,8 +10,12 @@ class WeiboYinxiang {
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 
-		 WeiboFavorites object = new WeiboFavorites(args[0]);
-		 object.handleFavorites(true);
+		if (args.length != 1) {
+			System.err.println("Require 1 argument ...");
+			return;
+		}
+		WeiboFavorites object = new WeiboFavorites(args[0]);
+		object.handleFavorites(true);
 
 		// // 手工处理保存失败的微博
 		// WeiboFavoriteToYinxiang.handleWeiboFavoriteIds(false, args[0], "3708635370948492", "3708635857456127", "3708635887128136", "3708682946972397");
