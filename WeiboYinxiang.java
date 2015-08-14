@@ -11,6 +11,7 @@ class WeiboYinxiang {
 		// TODO Auto-generated method stub
 
 		if (args.length != 1) {
+			System.err.println("Usage: exe access_token");
 			System.err.println("Require 1 argument ...");
 			return;
 		}
